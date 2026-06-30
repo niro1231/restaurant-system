@@ -30,11 +30,11 @@ export default function AuthCard() {
 
       localStorage.setItem("user", JSON.stringify(data));
       
-      if (email === "admin@gmail.com") {
-        router.push("/admin");
-      } else {
-        router.push("/Pages/Home");
-      }
+    if (email === "admin@gmail.com") {
+      window.location.href = "/admin";
+    } else {
+      window.location.href = "/Pages/Home";
+    }
     } else {
       // 👇 instead of alert
       setErrorMsg(data.message || "Login failed");

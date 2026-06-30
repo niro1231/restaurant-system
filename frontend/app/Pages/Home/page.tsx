@@ -58,21 +58,6 @@ export default function Home() {
 
   const normalize = (v?: string) => (v ?? "").toString().trim().toLowerCase();
 
-  // 🔐 AUTH CHECK
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = document.cookie.includes("token=");
-      if (!token) {
-        router.replace("/");
-      }
-    };
-
-    checkAuth();
-    window.addEventListener("pageshow", checkAuth);
-
-    return () => window.removeEventListener("pageshow", checkAuth);
-  }, [router]);
-
   // 🍽️ FETCH MENU
   useEffect(() => {
     fetch("http://localhost:4000/menu")
@@ -283,7 +268,7 @@ export default function Home() {
       {/* 🌍 WORLD MAP SECTION */}
       <div id="world-map" className="mt-10">
         <div className="relative w-full h-[340px] rounded-xl overflow-hidden border border-white/10">
-          <img src="/world.png" className="w-full h-full object-cover" />
+          <img src="/World.png" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/50" />
 
           <div className="absolute inset-0 flex items-center justify-between px-6">
