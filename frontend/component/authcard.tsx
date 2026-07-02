@@ -14,10 +14,11 @@ export default function AuthCard() {
   const [success, setSuccess] = useState("");
   const [blockedPopup, setBlockedPopup] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   // LOGIN
   const login = async () => {
-    const res = await fetch("http://localhost:4000/auth/login", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // 🔥 IMPORTANT
@@ -47,7 +48,7 @@ export default function AuthCard() {
     setError("");
     setSuccess("");
 
-    const res = await fetch("http://localhost:4000/auth/register", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
