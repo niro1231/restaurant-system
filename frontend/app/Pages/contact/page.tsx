@@ -17,7 +17,7 @@ export default function ContactPage() {
     try {
       setLoading(true);
 
-      await sendMessage(message); // 🔥 only message
+      await sendMessage(message);
 
       setShowPopup(true);
       setMessage("");
@@ -27,6 +27,7 @@ export default function ContactPage() {
       }, 2000);
     } catch (err) {
       console.error("Error sending message:", err);
+      alert(err instanceof Error ? err.message : "Failed to send message");
     } finally {
       setLoading(false);
     }

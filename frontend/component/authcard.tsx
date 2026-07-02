@@ -21,21 +21,31 @@ export default function AuthCard() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // 🔥 IMPORTANT
       body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
 
     if (res.ok) {
+      const token = data.accessToken || data.token;
 
-      localStorage.setItem("user", JSON.stringify(data));
-      
-    if (email === "admin@gmail.com") {
-      window.location.href = "/admin";
-    } else {
-      window.location.href = "/Pages/Home";
-    }
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userId: data.userId,
+          email: data.email || email,
+        }),
+      );
+
+      if (email === "admin@gmail.com") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/Pages/Home";
+      }
     } else {
       // 👇 instead of alert
       setErrorMsg(data.message || "Login failed");

@@ -1,13 +1,27 @@
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+function getAuthHeaders(): Record<string, string> {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const token = localStorage.getItem("token");
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
 
 // =======================
-// MENU API (PUBLIC or COOKIE AUTH if needed)
+// MENU API
 // =======================
 
 export async function getMenu() {
   const res = await fetch(`${BASE_URL}/menu`, {
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -18,8 +32,8 @@ export async function createMenu(data: any) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
-    credentials: "include", // 🔥 IMPORTANT
     body: JSON.stringify(data),
   });
 
@@ -31,8 +45,8 @@ export async function updateMenu(id: number, data: any) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
-    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -42,7 +56,7 @@ export async function updateMenu(id: number, data: any) {
 export async function deleteMenu(id: number) {
   const res = await fetch(`${BASE_URL}/menu/${id}`, {
     method: "DELETE",
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -55,7 +69,7 @@ export async function deleteMenu(id: number) {
 
 export async function getUsers() {
   const res = await fetch(`${BASE_URL}/users`, {
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -64,7 +78,7 @@ export async function getUsers() {
 export async function deleteUser(id: number) {
   const res = await fetch(`${BASE_URL}/users/${id}`, {
     method: "DELETE",
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -76,22 +90,35 @@ export async function deleteUser(id: number) {
 // =======================
 
 export async function sendMessage(message: string) {
+  const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+  const email = user?.email || "";
+
   const res = await fetch(`${BASE_URL}/contact`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
-    credentials: "include", // 🔥 COOKIE AUTH
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, email }),
   });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to send message");
+  }
 
   return res.json();
 }
 
 export async function getMessages() {
   const res = await fetch(`${BASE_URL}/contact`, {
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to load messages");
+  }
 
   return res.json();
 }
@@ -99,7 +126,7 @@ export async function getMessages() {
 export async function deleteMessage(id: number) {
   const res = await fetch(`${BASE_URL}/contact/${id}`, {
     method: "DELETE",
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -108,7 +135,7 @@ export async function deleteMessage(id: number) {
 export async function blockUser(id: number) {
   const res = await fetch(`${BASE_URL}/users/${id}/block`, {
     method: "PATCH",
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();
@@ -117,7 +144,7 @@ export async function blockUser(id: number) {
 export async function unblockUser(id: number) {
   const res = await fetch(`${BASE_URL}/users/${id}/unblock`, {
     method: "PATCH",
-    credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   return res.json();

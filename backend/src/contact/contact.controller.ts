@@ -5,24 +5,21 @@ import {
   Delete,
   Param,
   Body,
-  UseGuards,
   Req,
 } from '@nestjs/common';
 
 import { ContactService } from './contact.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('contact')
 export class ContactController {
   constructor(private service: ContactService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   create(
     @Req() req,
-    @Body() body: { message: string },
+    @Body() body: { message: string; email?: string },
   ) {
-    const email = req.user.email;
+    const email = body.email || req?.user?.email || 'anonymous@example.com';
 
     return this.service.create({
       message: body.message,

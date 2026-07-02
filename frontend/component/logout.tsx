@@ -6,14 +6,18 @@ export default function LogoutButton() {
   const router = useRouter();
   const API = process.env.NEXT_PUBLIC_API_URL;
   const logout = async () => {
-    await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
       method: "POST",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
     });
 
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
     router.replace("/");
-    router.refresh(); 
+    router.refresh();
   };
 
   return (
