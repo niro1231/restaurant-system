@@ -6,7 +6,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'https://restaurant-system-eight-pi.vercel.app',
   });
 
   await app.listen(4000, '0.0.0.0');
