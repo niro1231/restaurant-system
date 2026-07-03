@@ -24,7 +24,6 @@ jobs:
       - name: Build & Export Next.js
         run: |
           npm run build
-          npm run export
         working-directory: ./frontend
 
       - name: Configure AWS credentials
