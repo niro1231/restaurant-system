@@ -2,6 +2,61 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getMenu } from "@/app/service/api";
+
+/* =========================
+   OFFER SLIDER (OUTSIDE HOME)
+========================= */
+function OfferSlider({ offers, onOffer }: any) {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % offers.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [offers.length]);
+
+  return (
+    <div className="relative w-full h-80 rounded-xl overflow-hidden border border-white/10">
+      {offers.map((offer: any, index: number) => (
+        <div
+          key={offer.id}
+          className={`absolute inset-0 transition-opacity duration-700 ${index === current ? "opacity-100" : "opacity-0"
+            }`}
+        >
+          <img src={offer.image} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+
+          <div className="absolute inset-0 flex flex-col justify-center px-6">
+            <h2 className="text-xl font-bold">{offer.title}</h2>
+            <p className="text-sm text-gray-200 mt-1">{offer.desc}</p>
+
+            <button
+              onClick={() => onOffer(offer)}
+              className="mt-3 w-fit px-4 py-2 bg-blue-600 rounded-md text-xs hover:bg-blue-500 transition"
+            >
+              Grab Offer
+            </button>
+          </div>
+        </div>
+      ))}
+
+      {/* DOTS */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+        {offers.map((_: any, i: number) => (
+          <div
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`w-2 h-2 rounded-full cursor-pointer ${i === current ? "bg-blue-500" : "bg-white/40"
+              }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type MenuItem = {
   id: number;
@@ -24,6 +79,29 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+
+    if (hash !== "#world-map") return;
+
+    const scroll = () => {
+      const el = document.getElementById("world-map");
+
+      if (el) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    };
+
+    // wait ONE frame after page load
+    requestAnimationFrame(() => {
+      setTimeout(scroll, 100);
+    });
+  }, []);
+
   // 🎯 OFFERS SLIDER STATE
   const offers = [
     {
@@ -46,33 +124,22 @@ export default function Home() {
     },
   ];
 
-  const [currentOffer, setCurrentOffer] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentOffer((prev) => (prev + 1) % offers.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const normalize = (v?: string) => (v ?? "").toString().trim().toLowerCase();
 
   // 🍽️ FETCH MENU
   useEffect(() => {
-    fetch("http://localhost:4000/menu")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch menu");
-        return res.json();
-      })
-      .then((data) => {
+    async function loadMenu() {
+      try {
+        const data = await getMenu();
         setMenu(data);
-        setMenuLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
         setError("Failed to load menu 😢");
+      } finally {
         setMenuLoading(false);
-      });
+      }
+    }
+
+    loadMenu();
   }, []);
 
   const handleOrder = () => setShowModal(true);
@@ -164,56 +231,15 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white px-4 py-6">
-
-      {/* 🎯 OFFERS SLIDER */}
-      <div>
-
-        <div className="relative w-full h-80 rounded-xl overflow-hidden border border-white/10">
-          {offers.map((offer, index) => (
-            <div
-              key={offer.id}
-              className={`absolute inset-0 transition-opacity duration-700 ${index === currentOffer ? "opacity-100" : "opacity-0"
-                }`}
-            >
-              <img
-                src={offer.image}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/50" />
-
-              <div className="absolute inset-0 flex flex-col justify-center px-6">
-                <h2 className="text-xl font-bold">{offer.title}</h2>
-                <p className="text-sm text-gray-200 mt-1">{offer.desc}</p>
-
-                <button
-                  onClick={() => {
-                    setSelectedOffer({
-                      title: "🎁 Special Foodie Offer",
-                      desc: "Enjoy exclusive deals at your nearest Foodie restaurant. Limited time only!"
-                    });
-                    setShowOfferModal(true);
-                  }}
-                  className="mt-3 w-fit px-4 py-2 bg-blue-600 rounded-md text-xs hover:bg-blue-500 transition"
-                >
-                  Grab Offer
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {/* DOTS */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-            {offers.map((_, i) => (
-              <div
-                key={i}
-                onClick={() => setCurrentOffer(i)}
-                className={`w-2 h-2 rounded-full cursor-pointer ${i === currentOffer ? "bg-blue-500" : "bg-white/40"
-                  }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      
+      {/* ✅ FIXED SLIDER */}
+      <OfferSlider
+        offers={offers}
+        onOffer={(offer: any) => {
+          setSelectedOffer(offer);
+          setShowOfferModal(true);
+        }}
+      />
 
       {/* HEADER */}
 

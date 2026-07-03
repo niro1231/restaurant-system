@@ -19,7 +19,7 @@ export class ContactController {
     @Req() req,
     @Body() body: { message: string; email?: string },
   ) {
-    const email = body.email || req?.user?.email || 'anonymous@example.com';
+    const email = body.email || req?.user?.email;
 
     return this.service.create({
       message: body.message,

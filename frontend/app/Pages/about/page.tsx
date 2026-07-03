@@ -47,32 +47,21 @@ export default function AboutPage() {
           </div>
 
           <button
-            onClick={() => {
-              router.push("/");
-
-              // wait for page to load then scroll
-              setTimeout(() => {
-                const el = document.getElementById("world-map");
-                if (el) {
-                  el.scrollIntoView({ behavior: "smooth" });
-                }
-              }, 300);
-            }}
+            onClick={() => router.push("/#world-map")}
             className="mt-6 bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition"
           >
             LEARN MORE
           </button>
-          
+
         </div>
 
         {/* RIGHT IMAGE */}
         <div className="relative">
           <div className="rounded-2xl overflow-hidden shadow-2xl">
-            <Image
+            <img
               src="/about2.jpg"
               alt="About us"
-              width={600}
-              height={500}
+              loading="lazy"
               className="object-cover w-full h-full"
             />
           </div>
