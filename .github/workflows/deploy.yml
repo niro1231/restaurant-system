@@ -21,16 +21,20 @@ jobs:
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password | docker login --username AWS --password-stdin <your-ecr-url>
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
+          | docker login --username AWS --password-stdin 648426766001.dkr.ecr.ap-south-1.amazonaws.com
 
       - name: Build Docker image
         run: |
           docker build -t backend ./backend
 
-      - name: Push Docker image
+      - name: Tag Docker image
         run: |
-          docker tag backend:latest <your-ecr-url>:latest
-          docker push <your-ecr-url>:latest
+          docker tag backend:latest 648426766001.dkr.ecr.ap-south-1.amazonaws.com/restaurant-backend:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push 648426766001.dkr.ecr.ap-south-1.amazonaws.com/restaurant-backend:latest
 
       - name: Deploy to ECS
         run: |
