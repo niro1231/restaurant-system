@@ -2,7 +2,6 @@
 
 import AuthCard from "@/component/authcard";
 
-
 export default function Home() {
   return (
     <div
@@ -16,16 +15,16 @@ export default function Home() {
       {/* dark overlay */}
       <div className="absolute inset-0 bg-black/60 pointer-events-none"></div>
 
-      <div className="relative z-10 w-full flex">
+      <div className="relative z-10 w-full flex flex-col md:flex-row">
 
-        {/* LEFT SIDE - LANDING CONTENT */}
-        <div className="w-1/2 h-full flex flex-col justify-center px-20 text-white">
+        {/* LEFT SIDE */}
+        <div className="w-full md:w-1/2 h-full flex flex-col justify-center px-6 md:px-20 text-white">
 
-          <h1 className="text-6xl font-extrabold leading-tight">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
             🍽️ Foodie Restaurant
           </h1>
 
-          <p className="mt-6 text-lg text-gray-200 max-w-xl">
+          <p className="mt-6 text-base md:text-lg text-gray-200 max-w-xl">
             Welcome to Foodie Restaurant — where taste meets perfection.
             We serve fresh, delicious meals made by world-class chefs
             with passion and quality.
@@ -44,8 +43,8 @@ export default function Home() {
 
         </div>
 
-        {/* RIGHT SIDE - LOGIN CARD */}
-        <div className="w-1/2 h-full flex items-center justify-center">
+        {/* RIGHT SIDE */}
+        <div className="w-full md:w-1/2 h-full flex items-center justify-center mt-10 md:mt-0">
           <AuthCard />
         </div>
 
